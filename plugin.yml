@@ -1,0 +1,11 @@
+  name: SimpleSpawner
+  main: xenialdan\SimpleSpawner\Loader
+  version: 1.0.2
+  api: ['*', '3.0.0-ALPHA2', '3.0.0-ALPHA1', '3.0.0']
+  load: POSTWORLD
+  authors: [XenialDan]
+  prefix: "SimpleSpawner by XenialDan"
+  permissions:
+    simplespawner:
+      description: Perm for giving spawner
+      default: op
