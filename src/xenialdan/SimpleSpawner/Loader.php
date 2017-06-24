@@ -9,18 +9,8 @@ use pocketmine\tile\Tile;
 use xenialdan\SimpleSpawner\block\MonsterSpawner;
 use xenialdan\SimpleSpawner\tile\MobSpawner;
 
-class Loader extends PluginBase
-{
-    public function onEnable()
-    {
-		$this->getServer()->getCommandMap()->register(Commands::class, new Commands($this));
-
-		Block::$list[Block::MONSTER_SPAWNER] = MonsterSpawner::class;
-		Item::$list[Block::MONSTER_SPAWNER] = MonsterSpawner::class;//this is because i need to override Item::get()
-		Tile::registerTile(MobSpawner::class);
-    }
-
-	public static function getTypeArray(){
+class Loader extends PluginBase {
+	public static function getTypeArray() {
 		return
 			[
 				80 => 'arrow',
@@ -84,5 +74,13 @@ class Loader extends PluginBase
 				27 => 'zombiehorse',
 				44 => 'zombievillager',
 			];
+	}
+
+	public function onEnable() {
+		$this->getServer()->getCommandMap()->register(Commands::class, new Commands($this));
+
+		Block::$list[Block::MONSTER_SPAWNER] = MonsterSpawner::class;
+		Item::$list[Block::MONSTER_SPAWNER] = MonsterSpawner::class;//this is because i need to override Item::get()
+		Tile::registerTile(MobSpawner::class);
 	}
 }

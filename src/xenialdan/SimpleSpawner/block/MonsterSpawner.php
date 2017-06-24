@@ -28,8 +28,8 @@ use pocketmine\item\Tool;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\tile\Tile;
 use pocketmine\Player;
+use pocketmine\tile\Tile;
 use xenialdan\SimpleSpawner\Loader;
 use xenialdan\SimpleSpawner\tile\MobSpawner;
 
@@ -37,7 +37,7 @@ class MonsterSpawner extends Solid {
 
 	protected $id = self::MONSTER_SPAWNER;
 
-	public function __construct($meta = 0){
+	public function __construct($meta = 0) {
 		$this->meta = $meta;
 	}
 
@@ -45,31 +45,23 @@ class MonsterSpawner extends Solid {
 		return 5;
 	}
 
-	public function getToolType(){
+	public function getToolType() {
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function isSolid(){
+	public function isSolid() {
 		return true;
 	}
 
-	public function getName() : string{
-		if($this->meta === 0) return "Monster Spawner";
-		else{
-			$name = ucfirst(Loader::getTypeArray()[$this->meta]??'monster'). ' Spawner';
-			return $name;
-		}
-	}
-
-	public function canBeActivated() : bool {
+	public function canBeActivated(): bool {
 		return true;
 	}
 
-	public function onActivate(Item $item, Player $player = null){
-		if($this->getDamage() == 0){
-			if($item->getId() == Item::SPAWN_EGG){
+	public function onActivate(Item $item, Player $player = null) {
+		if ($this->getDamage() == 0) {
+			if ($item->getId() == Item::SPAWN_EGG) {
 				$tile = $this->getLevel()->getTile($this);
-				if($tile instanceof MobSpawner){
+				if ($tile instanceof MobSpawner) {
 					$this->meta = $item->getDamage();
 					//$this->getLevel()->setBlock($this, $this, true, false);
 					$tile->setEntityId($this->meta);
@@ -80,7 +72,7 @@ class MonsterSpawner extends Solid {
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null) {
 		$this->getLevel()->setBlock($block, $this, true, true);
 		$nbt = new CompoundTag("", [
 			new StringTag("id", 'MobSpawner'),
@@ -89,8 +81,8 @@ class MonsterSpawner extends Solid {
 			new IntTag("z", $block->z),
 			new IntTag("EntityId", $this->getDamage()),
 		]);
-		
-		Tile::createTile('MobSpawner', $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
+
+		Tile::createTile('MobSpawner', $this->getLevel(), $nbt);
 		return true;
 	}
 
@@ -109,5 +101,13 @@ class MonsterSpawner extends Solid {
 		return [
 			[$this->id, $this->meta, 1],
 		];
+	}
+
+	public function getName(): string {
+		if ($this->meta === 0) return "Monster Spawner";
+		else {
+			$name = ucfirst(Loader::getTypeArray()[$this->meta]??'monster') . ' Spawner';
+			return $name;
+		}
 	}
 }
