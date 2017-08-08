@@ -78,7 +78,7 @@ class MobSpawner extends Spawnable {
 		}
 	}
 
-	public function onUpdate() {
+	public function onUpdate():bool{
 		if ($this->closed === true) {
 			return false;
 		}
@@ -171,15 +171,7 @@ class MobSpawner extends Spawnable {
 		return $this->namedtag["MaxSpawnDelay"];
 	}
 
-	public function getSpawnCompound() {
-		$c = new CompoundTag("", [
-			new StringTag("id", 'MobSpawner'),
-			new IntTag("x", (int)$this->x),
-			new IntTag("y", (int)$this->y),
-			new IntTag("z", (int)$this->z),
-			new IntTag("EntityId", (int)$this->getEntityId())
-		]);
-
-		return $c;
+	public function addAdditionalSpawnData(CompoundTag $nbt){
+		$nbt->EntityId = $this->namedtag->EntityId;
 	}
 }
