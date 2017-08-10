@@ -33,37 +33,22 @@ use pocketmine\tile\Tile;
 use xenialdan\SimpleSpawner\Loader;
 use xenialdan\SimpleSpawner\tile\MobSpawner;
 
-class MonsterSpawner extends Solid {
+class MonsterSpawner extends \pocketmine\block\MonsterSpawner{
 
-	protected $id = self::MONSTER_SPAWNER;
-
-	public function __construct($meta = 0) {
+	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness() {
-		return 5;
-	}
-
-	public function getToolType() {
-		return Tool::TYPE_PICKAXE;
-	}
-
-	public function isSolid() {
+	public function canBeActivated(): bool{
 		return true;
 	}
 
-	public function canBeActivated(): bool {
-		return true;
-	}
-
-	public function onActivate(Item $item, Player $player = null) {
-		if ($this->getDamage() == 0) {
-			if ($item->getId() == Item::SPAWN_EGG) {
+	public function onActivate(Item $item, Player $player = null){
+		if ($this->getDamage() === 0){
+			if ($item->getId() === Item::SPAWN_EGG){
 				$tile = $this->getLevel()->getTile($this);
-				if ($tile instanceof MobSpawner) {
-					$this->meta = $item->getDamage();
-					//$this->getLevel()->setBlock($this, $this, true, false);
+				if ($tile instanceof MobSpawner){
+					$this->meta = $item->getDamage(); // Abusing meta as EntityID
 					$tile->setEntityId($this->meta);
 				}
 				return true;
@@ -72,7 +57,7 @@ class MonsterSpawner extends Solid {
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null) {
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$this->getLevel()->setBlock($block, $this, true, true);
 		$nbt = new CompoundTag("", [
 			new StringTag("id", 'MobSpawner'),
@@ -86,26 +71,15 @@ class MonsterSpawner extends Solid {
 		return true;
 	}
 
-	public function onBreak(Item $item) {
-		// for some reason never called
-		foreach ($this->getDrops($item) as $drop) {
-			$item = Item::get($drop[0], $drop[1], $drop[2]);
-			if ($item->getDamage() > 0) $item->setCustomName($this->getName());
-			$this->getLevel()->dropItem($this->add(0.5, 0.5, 0.5), $item);
-		}
-		return true;
-	}
-
-	public function getDrops(Item $item) {
-		// for some reason never called
+	public function getDrops(Item $item){
 		return [
-			[$this->id, $this->meta, 1],
+			[$this->getItemId(), $this->getDamage(), 1, $this->getLevel()->getTile($this)->namedtag],
 		];
 	}
 
-	public function getName(): string {
+	public function getName(): string{
 		if ($this->meta === 0) return "Monster Spawner";
-		else {
+		else{
 			$name = ucfirst(Loader::getTypeArray()[$this->meta]??'monster') . ' Spawner';
 			return $name;
 		}

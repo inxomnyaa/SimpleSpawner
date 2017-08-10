@@ -8,25 +8,25 @@ use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 use xenialdan\SimpleSpawner\Loader;
 
-class GetSubCommand extends SubCommand {
+class GetSubCommand extends SubCommand{
 
-	public function canUse(CommandSender $sender) {
+	public function canUse(CommandSender $sender){
 		return ($sender instanceof Player) and $sender->hasPermission("simplespawner");
 	}
 
-	public function getUsage() {
+	public function getUsage(){
 		return "get <type>";
 	}
 
-	public function getName() {
+	public function getName(){
 		return "get";
 	}
 
-	public function getDescription() {
+	public function getDescription(){
 		return "Get a spawner";
 	}
 
-	public function getAliases() {
+	public function getAliases(){
 		return [];
 	}
 
@@ -35,15 +35,15 @@ class GetSubCommand extends SubCommand {
 	 * @param array $args
 	 * @return bool
 	 */
-	public function execute(CommandSender $sender, array $args) {
+	public function execute(CommandSender $sender, array $args){
 		$player = $sender->getServer()->getPlayer($sender->getName());
-		if (count($args) < 1) {
+		if (count($args) < 1){
 			$player->sendMessage(TextFormat::RED . 'Sorry, you need to provide a spawner type');
 			return false;
 		}
 		$type = $args[0];
 		$types = Loader::getTypeArray();
-		if (!in_array($type, $types)) {
+		if (!in_array($type, $types)){
 			$player->sendMessage(TextFormat::RED . 'Spawner type ' . $type . ' doesn\'t exist, check /spawner list!');
 			return false;
 		}

@@ -9,8 +9,8 @@ use pocketmine\tile\Tile;
 use xenialdan\SimpleSpawner\block\MonsterSpawner;
 use xenialdan\SimpleSpawner\tile\MobSpawner;
 
-class Loader extends PluginBase {
-	public static function getTypeArray() {
+class Loader extends PluginBase{
+	public static function getTypeArray(){
 		return
 			[
 				80 => 'arrow',
@@ -76,7 +76,7 @@ class Loader extends PluginBase {
 			];
 	}
 
-	public function onEnable() {
+	public function onEnable(){
 		$this->getServer()->getCommandMap()->register(Commands::class, new Commands($this));
 
 		Block::$list[Block::MONSTER_SPAWNER] = MonsterSpawner::class;
