@@ -110,7 +110,7 @@ class MobSpawner extends Spawnable{
 								new FloatTag("", 0)
 							]),
 						]);
-						$entity = Entity::createEntity($this->getEntityId(), $this->level, $nbt);
+						$entity = Entity::createEntity($this->getEntityId(), $this->getLevel(), $nbt);
 						$entity->spawnToAll();
 					}
 				}
@@ -171,5 +171,10 @@ class MobSpawner extends Spawnable{
 
 	public function addAdditionalSpawnData(CompoundTag $nbt){
 		$nbt->EntityId = $this->namedtag->EntityId;
+		$nbt->Delay = $this->namedtag->Delay;
+		$nbt->SpawnCount = $this->namedtag->SpawnCount;
+		$nbt->SpawnRange = $this->namedtag->SpawnRange;
+		$nbt->MinSpawnDelay = $this->namedtag->MinSpawnDelay;
+		$nbt->MaxSpawnDelay = $this->namedtag->MaxSpawnDelay;
 	}
 }

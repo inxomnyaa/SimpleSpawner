@@ -22,9 +22,9 @@
 namespace xenialdan\SimpleSpawner\block;
 
 use pocketmine\block\Block;
-use pocketmine\block\Solid;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
@@ -35,21 +35,21 @@ use xenialdan\SimpleSpawner\tile\MobSpawner;
 
 class MonsterSpawner extends \pocketmine\block\MonsterSpawner{
 
-	public function __construct($meta = 0){
-		$this->meta = $meta;
-	}
+	private $entityid = 0;
+
+	public function __construct(){ }
 
 	public function canBeActivated(): bool{
 		return true;
 	}
 
-	public function onActivate(Item $item, Player $player = null){
-		if ($this->getDamage() === 0){
+	public function onActivate(Item $item, Player $player = null): bool{
+		if ($this->entityid === 0){
 			if ($item->getId() === Item::SPAWN_EGG){
 				$tile = $this->getLevel()->getTile($this);
 				if ($tile instanceof MobSpawner){
-					$this->meta = $item->getDamage(); // Abusing meta as EntityID
-					$tile->setEntityId($this->meta);
+					$this->entityid = $item->getDamage();
+					$tile->setEntityId($this->entityid);
 				}
 				return true;
 			}
@@ -57,30 +57,35 @@ class MonsterSpawner extends \pocketmine\block\MonsterSpawner{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null): bool{
 		$this->getLevel()->setBlock($block, $this, true, true);
 		$nbt = new CompoundTag("", [
 			new StringTag("id", 'MobSpawner'),
 			new IntTag("x", $block->x),
 			new IntTag("y", $block->y),
 			new IntTag("z", $block->z),
-			new IntTag("EntityId", $this->getDamage()),
+			new IntTag("EntityId", $this->entityid),
 		]);
 
 		Tile::createTile('MobSpawner', $this->getLevel(), $nbt);
 		return true;
 	}
 
-	public function getDrops(Item $item){
-		return [
-			[$this->getItemId(), $this->getDamage(), 1, $this->getLevel()->getTile($this)->namedtag],
-		];
+	public function getDrops(Item $item): array{
+		$tile = $this->getLevel()->getTile($this);
+		if ($tile instanceof MobSpawner){
+			if ($item->hasEnchantment(Enchantment::SILK_TOUCH))
+				return [
+					[$this->getItemId(), $tile->getEntityId(), 1, $this->getLevel()->getTile($this)->namedtag],
+				];
+		}
+		return [];
 	}
 
 	public function getName(): string{
-		if ($this->meta === 0) return "Monster Spawner";
+		if ($this->entityid === 0) return "Monster Spawner";
 		else{
-			$name = ucfirst(Loader::getTypeArray()[$this->meta]??'monster') . ' Spawner';
+			$name = ucfirst(Loader::getTypeArray()[$this->entityid]??'monster') . ' Spawner';
 			return $name;
 		}
 	}
