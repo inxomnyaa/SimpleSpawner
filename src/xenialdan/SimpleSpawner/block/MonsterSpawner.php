@@ -24,6 +24,7 @@ namespace xenialdan\SimpleSpawner\block;
 use pocketmine\block\Block;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -47,10 +48,11 @@ class MonsterSpawner extends \pocketmine\block\MonsterSpawner{
 		if ($this->entityid === 0){
 			if ($item->getId() === Item::SPAWN_EGG){
 				$tile = $this->getLevel()->getTile($this);
-				if ($tile instanceof MobSpawner){
-					$this->entityid = $item->getDamage();
-					$tile->setEntityId($this->entityid);
+				$this->entityid = $item->getDamage();
+				if (!$tile instanceof MobSpawner){
+					Tile::createTile('MobSpawner', $this->getLevel(), Tile::createNBT($this));
 				}
+				$tile->setEntityId($this->entityid);
 				return true;
 			}
 		}
@@ -59,15 +61,7 @@ class MonsterSpawner extends \pocketmine\block\MonsterSpawner{
 
 	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null): bool{
 		$this->getLevel()->setBlock($block, $this, true, true);
-		$nbt = new CompoundTag("", [
-			new StringTag("id", 'MobSpawner'),
-			new IntTag("x", $block->x),
-			new IntTag("y", $block->y),
-			new IntTag("z", $block->z),
-			new IntTag("EntityId", $this->entityid),
-		]);
-
-		Tile::createTile('MobSpawner', $this->getLevel(), $nbt);
+		Tile::createTile('MobSpawner', $this->getLevel(), Tile::createNBT($this));
 		return true;
 	}
 
@@ -76,7 +70,7 @@ class MonsterSpawner extends \pocketmine\block\MonsterSpawner{
 		if ($tile instanceof MobSpawner){
 			if ($item->hasEnchantment(Enchantment::SILK_TOUCH))
 				return [
-					[$this->getItemId(), $tile->getEntityId(), 1, $this->getLevel()->getTile($this)->namedtag],
+					ItemFactory::get($this->getItemId(), $tile->getEntityId(), 1, $this->getLevel()->getTile($this)->namedtag)
 				];
 		}
 		return [];

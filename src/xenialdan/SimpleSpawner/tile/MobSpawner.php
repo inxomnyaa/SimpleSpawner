@@ -7,10 +7,7 @@ use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\Player;
 use pocketmine\tile\Spawnable;
 use xenialdan\SimpleSpawner\Loader;
@@ -94,23 +91,7 @@ class MobSpawner extends Spawnable{
 					$target = $this->getLevel()->getBlock($pos);
 					if ($target->getId() == Item::AIR){
 						$success++;
-						$nbt = new CompoundTag("", [
-							"Pos" => new ListTag("Pos", [
-								new DoubleTag("", $pos->x),
-								new DoubleTag("", $pos->y),
-								new DoubleTag("", $pos->z)
-							]),
-							"Motion" => new ListTag("Motion", [
-								new DoubleTag("", 0),
-								new DoubleTag("", 0),
-								new DoubleTag("", 0)
-							]),
-							"Rotation" => new ListTag("Rotation", [
-								new FloatTag("", mt_rand() / mt_getrandmax() * 360),
-								new FloatTag("", 0)
-							]),
-						]);
-						$entity = Entity::createEntity($this->getEntityId(), $this->getLevel(), $nbt);
+						$entity = Entity::createEntity($this->getEntityId(), $this->getLevel(), Entity::createBaseNBT($target->add(0.5, 0, 0.5), null, lcg_value() * 360, 0));
 						$entity->spawnToAll();
 					}
 				}
@@ -169,7 +150,7 @@ class MobSpawner extends Spawnable{
 		return $this->namedtag["MaxSpawnDelay"];
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt){
+	public function addAdditionalSpawnData(CompoundTag $nbt): void{
 		$nbt->EntityId = $this->namedtag->EntityId;
 		$nbt->Delay = $this->namedtag->Delay;
 		$nbt->SpawnCount = $this->namedtag->SpawnCount;
