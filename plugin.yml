@@ -1,11 +1,16 @@
-  name: SimpleSpawner
-  main: xenialdan\SimpleSpawner\Loader
-  version: 1.3.4
-  api: ['3.0.0-ALPHA9']
-  load: POSTWORLD
-  authors: [XenialDan]
-  prefix: "SimpleSpawner by XenialDan"
-  permissions:
-    simplespawner:
-      description: Perm for giving spawner
-      default: op
+---
+name: SimpleSpawner
+main: xenialdan\SimpleSpawner\Loader
+version: 1.3.4
+api:
+- 3.0.0-ALPHA9
+- 3.0.0-ALPHA10
+load: POSTWORLD
+authors:
+- XenialDan
+prefix: SimpleSpawner by XenialDan
+permissions:
+  simplespawner:
+    description: Perm for giving spawner
+    default: op
+...
